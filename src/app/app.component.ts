@@ -1,10 +1,15 @@
+import { users } from './author.model';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'pratice-angular';
+  titles = ['pratice-angular', 'react'];
+  authors = users;
+  isCheck = true;
+  currentIndex = 0;
+  showTab4 = true;
 }

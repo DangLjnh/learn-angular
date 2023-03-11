@@ -1,0 +1,12 @@
+<header>
+  <ng-content select=".header"></ng-content>
+</header>
+<div class="toggle-wrapper" [class.checked]="checked" tabindex="0" (click)="toggle()">
+  <div class="toggle"></div>
+</div>
+<div class="toggle-content">
+  <ng-content select=".content"></ng-content>
+</div>
+<div class="toggle-footer">
+  <ng-content select=".footer"></ng-content>
+</div>
