@@ -5,7 +5,7 @@
   <p class="footer">This is footer</p>
 </app-toggle> -->
 
-<button (click)="showTab4 = !showTab4">Show toggle tab 4</button>
+<!-- <button (click)="showTab4 = !showTab4">Show toggle tab 4</button>
 
 <app-tab-group [(activeIndex)]="currentIndex">
   <app-tab-panel title="First tab">
@@ -26,10 +26,44 @@
       <app-counter></app-counter>
     </ng-template>
   </app-tab-panel>
-</app-tab-group>
+</app-tab-group> -->
 
 <!-- <app-tab-bs-group>
   <app-tab-panel title="First tab">First tab content</app-tab-panel>
   <app-tab-panel title="Second tab">Second tab content</app-tab-panel>
   <app-tab-panel title="Third tab">Third tab content</app-tab-panel>
 </app-tab-bs-group> -->
+
+<p>{{currentDate | date}}</p>
+<p>{{currentDate | date:'shortDate'}}</p>
+<p>{{currentDate | date:'mediumDate'}}</p>
+<p>{{currentDate | date:'fullDate'}}</p>
+<p>{{currentDate | date:'dd/MM/yyyy'}}</p>
+
+<p>{{'DangLinh' | lowercase}}</p>
+<p>{{'DangLinh' | uppercase}}</p>
+
+<p>{{250 | currency}}</p>
+<p>{{250000 | currency:'VND'}}</p>
+
+<p>{{2.253654835 | number:'1.1-2'}}</p>
+<!-- json ~ jsonStringify -->
+
+<p>{{intervals | async}}</p>
+
+{{address | formatAddress:'par1'}}
+<br>
+<ul>
+  <p>Filter list</p>
+  <li *ngFor="let user of users | adult">
+    {{user.name}} - {{user.age}}
+  </li>
+</ul>
+<ul>
+  <p>Full list</p>
+  <li *ngFor="let user of users">
+    {{user.name}} - {{user.age}}
+  </li>
+</ul>
+
+<button (click)="addUser()">Add new user</button>

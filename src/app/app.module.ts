@@ -10,6 +10,8 @@ import { TabPanelComponent } from './tab-panel/tab-panel.component';
 import { TabBsGroupComponent } from './tab-bs-group/tab-bs-group.component';
 import { CounterComponent } from './counter/counter.component';
 import { TabContentDirective } from './tab-panel/tab-panel.directive';
+import { FormatPipeAddress } from './format-address.pipe';
+import { AdultPipe } from './adult.pipe';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { TabContentDirective } from './tab-panel/tab-panel.directive';
     TabBsGroupComponent,
     CounterComponent,
     TabContentDirective,
+    FormatPipeAddress,
+    AdultPipe,
   ],
   imports: [BrowserModule],
   providers: [],
