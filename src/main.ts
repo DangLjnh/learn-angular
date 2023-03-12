@@ -4,8 +4,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
-// import { fromEvent } from 'rxjs';
-// import { throttleTime } from 'rxjs/operators';
+import { fromEvent, Observable } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 if (environment.production) {
   enableProdMode();
 }
@@ -24,6 +24,31 @@ platformBrowserDynamic()
 //   }
 // });
 
+//fromEvent
 // fromEvent(document, 'mousemove')
 //   .pipe(throttleTime(1000))
 //   .subscribe(console.log);
+
+//observable use to get data from next
+const observable = new Observable(function subscribe(observer) {
+  const id = setInterval(() => {
+    observer.next('hello');
+  }, 1000);
+  return function unsubscribe() {
+    // observer.complete();
+    clearInterval(id);
+  };
+});
+
+//subscription (next, err, complete) -> observer
+const subscription = observable.subscribe(
+  (val) => console.log(val), //next
+  (err) => console.log(err),
+  () => console.log('complete')
+);
+
+subscription.add(observable.subscribe(console.log));
+
+setTimeout(() => {
+  subscription.unsubscribe();
+}, 5000);
