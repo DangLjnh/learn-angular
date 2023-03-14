@@ -16,6 +16,7 @@ import {
   defer,
   merge,
   BehaviorSubject,
+  asyncScheduler,
 } from 'rxjs';
 import {
   map,
@@ -28,6 +29,22 @@ import {
   buffer,
   bufferTime,
   scan,
+  filter,
+  first,
+  last,
+  find,
+  single,
+  take,
+  takeLast,
+  takeUntil,
+  takeWhile,
+  skip,
+  skipUntil,
+  skipWhile,
+  distinct,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
+  auditTime,
 } from 'rxjs/operators';
 if (environment.production) {
   enableProdMode();
@@ -217,7 +234,83 @@ const state$ = stateSubject
   .asObservable()
   .pipe(scan((state, partialState) => ({ ...state, ...partialState }), {}));
 
-state$.subscribe(observer);
-
 stateSubject.next({ name: 'Linh' });
 stateSubject.next({ age: 22 });
+
+// filter ~ like filter in array but filter and emit every item -> 1, 2
+const items = [1, 2, 3, 4, 5];
+from(items).pipe(filter((item) => item % 2 === 0));
+
+// first() - get first value
+// first((x) => x > 4) -> get first item greater than 4
+from(items).pipe(first());
+
+// last() - get last value
+from(items).pipe(last());
+
+// find element find first
+from(items).pipe(find((x) => x % 2 !== 0));
+
+// single -> like find but result have 1 value if greater than -> error
+from(items).pipe(single((x) => x > 4));
+
+// take (first) - take(2) -> get 2 value -> complete
+interval(1000).pipe(take(2));
+
+// takeLast -> get value last but observer must be complete -> 3, 4
+interval(1000).pipe(take(5), takeLast(2));
+
+// takeUntil -> 0, 1, 2, 3
+interval(1000).pipe(takeUntil(timer(5000)));
+
+// takeWhile -> true (emit) -> false (complete) -> get single value to compare
+interval(1000).pipe(takeWhile((x) => x < 10));
+
+// skip - skip(2) -> skip 2 value first
+interval(1000).pipe(skip(2));
+
+// skipUntil 4, 5, 6, ...
+interval(1000).pipe(skipUntil(timer(5000)));
+
+// skipWhile -> 4, 5, 6, ...
+interval(1000).pipe(skipWhile((x) => x < 5));
+
+// distinct -> if value already exists not emit again -> 1, 2, 3, 4, 5, 6
+from([1, 2, 1, 3, 4, 5, 6, 5, 4, 3, 2]).pipe(distinct());
+
+// get 1
+// distinctUntilChanged - 1 compare 1  -> skip
+// 1 compare 2 (other) -> get 2
+// 2 compare 2  -> skip
+// 2 compare 1 (other) -> get 1
+// -> 1, 2, 1, 2, 5, 6
+from([1, 1, 2, 2, 1, 2, 2, 5, 6]).pipe(distinctUntilChanged());
+
+//distinctUntilKeyChanged ~ like distinctUntilChanged but get by key
+of(
+  { age: 4, name: 'Foo' },
+  { age: 4, name: 'Foo' },
+  { age: 7, name: 'Bar' },
+  { age: 4, name: 'Foo' }
+).pipe(distinctUntilKeyChanged('age'));
+
+// audit time -> interval, timer (when timer run, all value -> skip)
+// until timer done -> audit time get last value
+fromEvent(document, 'click').pipe(auditTime(1500));
+
+interval(1000).pipe(auditTime(1500));
+// 1s: 0-> timer(1500) runs
+// 2s: 1 -> timer(500) rest
+// 2.5s: 1 -> timer disable -> get 1
+// 3s: 2 timer 1500
+// 4s: 3 timer 500
+// 4.5 3 timer disable -> get 3
+
+// asyncScheduler is default
+// throttleTime { trailing: false, leading: true } -> get first data -> timer run
+// throttleTime { trailing: true, leading: false } -> timer run -> runtime -> get latest data
+fromEvent(document, 'mousemove').pipe(
+  throttleTime(1500, asyncScheduler, { trailing: false, leading: true })
+);
+
+// fix bug use fromEvent

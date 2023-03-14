@@ -1,6 +1,7 @@
 import { users } from './author.model';
 import { Component } from '@angular/core';
-import { interval } from 'rxjs';
+import { interval, fromEvent, pluck } from 'rxjs';
+import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
 
 @Component({
   selector: 'app-root',
