@@ -12,6 +12,7 @@ import { CounterComponent } from './counter/counter.component';
 import { TabContentDirective } from './tab-panel/tab-panel.directive';
 import { FormatPipeAddress } from './format-address.pipe';
 import { AdultPipe } from './adult.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { AdultPipe } from './adult.pipe';
     FormatPipeAddress,
     AdultPipe,
   ],
-  imports: [BrowserModule],
+  imports: [BrowserModule, NgbModule],
   providers: [],
   bootstrap: [AppComponent],
 })

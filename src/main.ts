@@ -14,8 +14,21 @@ import {
   timer,
   throwError,
   defer,
+  merge,
+  BehaviorSubject,
 } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import {
+  map,
+  throttleTime,
+  delay,
+  pluck,
+  mapTo,
+  reduce,
+  toArray,
+  buffer,
+  bufferTime,
+  scan,
+} from 'rxjs/operators';
 if (environment.production) {
   enableProdMode();
 }
@@ -115,11 +128,96 @@ throwError('error');
 // random$.subscribe(observer);
 // defer: every subscribe create new observer ~ use in while call api when want to retry and get new value
 // need subscribe to run a function
-const random$ = defer(() => of(Math.random()));
-random$.subscribe(observer);
-random$.subscribe(observer);
-random$.subscribe(observer);
+// const random$ = defer(() => of(Math.random()));
+// random$.subscribe(observer);
+// random$.subscribe(observer);
+// random$.subscribe(observer);
 
 // defer(() => {
 //   return hadID ? updateResource() : createResource();
 // });
+
+const users = [
+  {
+    id: 1,
+    firstName: 'Dang',
+    lastName: 'Linh',
+    username: 'dt_nlinh',
+    age: 22,
+  },
+  {
+    id: 2,
+    firstName: 'Nguyen',
+    lastName: 'Vu',
+    username: 'pn_vu',
+    age: 18,
+  },
+];
+
+// map ->  input array -> output array, input element -> output element
+of(users).pipe(
+  map((data) => {
+    return data;
+  })
+);
+
+merge(of(users[0]).pipe(delay(1000)), of(users[1]).pipe(delay(2000))).pipe(
+  map((user) => ({ ...user, fullName: `${user.firstName} ${user.lastName}` }))
+);
+
+// pluck get Data from [] or {} or ...
+const params$ = of([1, 2, { foo: { bar: 'Linh' } }]);
+// use obj is pluck('key'), {foo:{bar: 'vu'}} -> pluck('foo','bar')
+const id$ = params$.pipe(pluck('2', 'foo', 'bar'));
+
+// mapTo when event change -> get value in mapTo
+merge(
+  fromEvent(document, 'mouseenter').pipe(mapTo(true)),
+  fromEvent(document, 'mouseleave').pipe(mapTo(false))
+);
+
+// reduce -> need complete to run reduce
+// 40
+const totalCount$ = merge(
+  of(users[0]).pipe(delay(1000)),
+  of(users[1]).pipe(delay(2000))
+);
+totalCount$.pipe(
+  reduce((acc, cur) => {
+    return acc + cur.age;
+  }, 0)
+);
+//toArray -> need complete to run toArray
+const people$ = merge(
+  of(users[0]).pipe(delay(1000)),
+  of(users[1]).pipe(delay(2000))
+).pipe(toArray());
+
+// buffer -> save data until emit data -> return array data
+const source$ = interval(1000);
+const click$ = fromEvent(document, 'click');
+
+source$.pipe(buffer(click$));
+
+// bufferTime -> instead use click to get Data -> use time to get data
+source$.pipe(bufferTime(2000));
+
+// scan -> accumulator single item -> return accumulator
+// 22 -> 40
+totalCount$.pipe(
+  scan((acc, cur) => {
+    return acc + cur.age;
+  }, 0)
+);
+
+const initialState = {};
+const stateSubject = new BehaviorSubject(initialState);
+
+const state$ = stateSubject
+  .asObservable()
+  .pipe(scan((state, partialState) => ({ ...state, ...partialState }), {}));
+
+state$.subscribe(observer);
+
+stateSubject.next({ name: 'Linh' });
+stateSubject.next({ age: 22 });
